@@ -170,7 +170,7 @@ subpackages:
       runtime:
         - py3-grpcio
         - py3-cloudpickle
-        - py3-numpy
+        - numpy
         - py3-scikit-learn
         - py3-scikit-optimize
         - py3-scipy
@@ -180,9 +180,11 @@ subpackages:
         - cython
     pipeline:
       - runs: |
-          mkdir -p ${{targets.subpkgdir}}/usr/bin/
-          cd ./cmd/suggestion/skopt/v1beta1
-          install -Dm755 ./main.py ${{targets.subpkgdir}}/usr/bin/
+          export SUGGESTION_DIR="cmd/suggestion/nas/enas/v1beta1"
+          mkdir -p ${{targets.subpkgdir}}/opt/katib
+          mkdir -p ${{targets.subpkgdir}}/opt/katib/$SUGGESTION_DIR
+          mv ./pkg ${{targets.subpkgdir}}/opt/katib/pkg
+          mv ./$SUGGESTION_DIR/* ${{targets.subpkgdir}}/opt/katib/$SUGGESTION_DIR
 
 update:
   enabled: true
