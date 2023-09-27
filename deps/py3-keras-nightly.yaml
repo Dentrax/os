@@ -1,0 +1,33 @@
+# Generated from https://pypi.org/project/keras-nightly/
+package:
+  name: py3-keras-nightly
+  version: 2.15.0.dev2023092007
+  epoch: 0
+  description: Deep learning for humans.
+  copyright:
+    - license: Apache 2.0
+  dependencies:
+    runtime:
+      - python-3
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - ca-certificates-bundle
+      - wolfi-base
+      - busybox
+      - build-base
+      - python-3
+      - py3-setuptools
+pipeline:
+  - uses: fetch
+    with:
+      README: 'CONFIRM WITH: curl -L https://files.pythonhosted.org/packages/57/b3/7ce5604d693a0cfec1d071aee0a7337df184d4cc98a92a1ef99a742369ea/keras-nightly-2.15.0.dev2023092007.tar.gz | sha256sum'
+      expected-sha256: 4ecf3ef0db089351e265dbed7658100ec0f7816cecb60ddf2c62e6fbb3974c4f
+      uri: https://files.pythonhosted.org/packages/57/b3/7ce5604d693a0cfec1d071aee0a7337df184d4cc98a92a1ef99a742369ea/keras-nightly-${{package.version}}.tar.gz
+  - name: Python Build
+    uses: python/build-wheel
+  - uses: strip

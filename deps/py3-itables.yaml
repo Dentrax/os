@@ -1,0 +1,48 @@
+# Generated from https://pypi.org/project/itables/
+package:
+  name: py3-itables
+  version: 1.5.4
+  epoch: 0
+  description: Interactive Tables in Jupyter
+  copyright:
+    - license: MIT
+  dependencies:
+    runtime:
+      - py3-IPython
+      - py3-pandas
+      - py3-numpy
+      - python-3
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - ca-certificates-bundle
+      - wolfi-base
+      - busybox
+      - build-base
+      - python-3
+      - py3-setuptools
+pipeline:
+  - uses: git-checkout
+    with:
+      README: for version v1.5.3, if you use this, update the package.version above to this version
+      expected-commit: 375bfc46ad4a2dc746c4621952b29bb661c5ffee
+      repository: https://github.com/mwouts/itables
+      tag: ${{package.version}}
+  - uses: git-checkout
+    with:
+      README: for version v1.5.4, if you use this, update the package.version above to this version
+      expected-commit: c3454d81a0d035daf7f14f816eba2f1b34d54fe0
+      repository: https://github.com/mwouts/itables
+      tag: v${{package.version}}
+  - name: Python Build
+    uses: python/build-wheel
+  - uses: strip
+update:
+  enabled: true
+  manual: false
+  github:
+    identifier: mwouts/itables

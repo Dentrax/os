@@ -1,0 +1,47 @@
+# Generated from https://pypi.org/project/jupyterlab/
+package:
+  name: py3-jupyterlab
+  version: 4.0.6
+  epoch: 0
+  description: JupyterLab computational environment
+  copyright:
+    - license: 'Copyright (c) 2015-2022 Project Jupyter Contributors All rights reserved.  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:  1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.  2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.  3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  Semver File License ===================  The semver.py file is from https://github.com/podhmo/python-semver which is licensed under the "MIT" license.  See the semver.py file for details.'
+  dependencies:
+    runtime:
+      - py3-async-lru
+      - py3-importlib-metadata
+      - py3-importlib-resources
+      - py3-ipykernel
+      - py3-jinja2
+      - py3-jupyter-core
+      - py3-jupyter-lsp
+      - py3-jupyter-server
+      - py3-jupyterlab-server
+      - py3-notebook-shim
+      - py3-packaging
+      - py3-tomli
+      - py3-tornado
+      - py3-traitlets
+      - python-3
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - ca-certificates-bundle
+      - wolfi-base
+      - busybox
+      - build-base
+      - python-3
+      - py3-setuptools
+pipeline:
+  - uses: fetch
+    with:
+      README: 'CONFIRM WITH: curl -L https://files.pythonhosted.org/packages/53/e9/6aba4b603ee9c78d1c81bad4112de152bbb078cd77e15377f9f7d8184901/jupyterlab-4.0.6.tar.gz | sha256sum'
+      expected-sha256: 6c43ae5a6a1fd2fdfafcb3454004958bde6da76331abb44cffc6f9e436b19ba1
+      uri: https://files.pythonhosted.org/packages/53/e9/6aba4b603ee9c78d1c81bad4112de152bbb078cd77e15377f9f7d8184901/jupyterlab-${{package.version}}.tar.gz
+  - name: Python Build
+    uses: python/build-wheel
+  - uses: strip

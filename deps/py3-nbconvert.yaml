@@ -1,0 +1,49 @@
+# Generated from https://pypi.org/project/nbconvert/
+package:
+  name: py3-nbconvert
+  version: 7.8.0
+  epoch: 0
+  description: Converting Jupyter Notebooks
+  copyright:
+    - license: 'BSD 3-Clause License  - Copyright (c) 2001-2015, IPython Development Team - Copyright (c) 2015-, Jupyter Development Team  All rights reserved.  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:  1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.  2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.  3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.'
+  dependencies:
+    runtime:
+      - py3-beautifulsoup4
+      - py3-bleach
+      - py3-defusedxml
+      - py3-importlib-metadata
+      - py3-jinja2
+      - py3-jupyter-core
+      - py3-jupyterlab-pygments
+      - py3-markupsafe
+      - py3-mistune
+      - py3-nbclient
+      - py3-nbformat
+      - py3-packaging
+      - py3-pandocfilters
+      - py3-pygments
+      - py3-tinycss2
+      - py3-traitlets
+      - python-3
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - ca-certificates-bundle
+      - wolfi-base
+      - busybox
+      - build-base
+      - python-3
+      - py3-setuptools
+pipeline:
+  - uses: fetch
+    with:
+      README: 'CONFIRM WITH: curl -L https://files.pythonhosted.org/packages/94/6e/d6d80216228eee779683c65dd861958bed25a608b9968e056ba32e8b0e75/nbconvert-7.8.0.tar.gz | sha256sum'
+      expected-sha256: f5bc15a1247e14dd41ceef0c0a3bc70020e016576eb0578da62f1c5b4f950479
+      uri: https://files.pythonhosted.org/packages/94/6e/d6d80216228eee779683c65dd861958bed25a608b9968e056ba32e8b0e75/nbconvert-${{package.version}}.tar.gz
+  - name: Python Build
+    uses: python/build-wheel
+  - uses: strip

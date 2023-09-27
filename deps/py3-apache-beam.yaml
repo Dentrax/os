@@ -1,0 +1,55 @@
+# Generated from https://pypi.org/project/apache-beam/
+package:
+  name: py3-apache-beam
+  version: 2.50.0
+  epoch: 0
+  description: Apache Beam SDK for Python
+  copyright:
+    - license: Apache License, Version 2.0
+  dependencies:
+    runtime:
+      - py3-crcmod
+      - py3-orjson
+      - py3-dill
+      - py3-cloudpickle
+      - py3-fastavro
+      - py3-fasteners
+      - py3-grpcio
+      - py3-hdfs
+      - py3-httplib2
+      - numpy
+      - py3-objsize
+      - py3-pymongo
+      - py3-proto-plus
+      - py3-protobuf
+      - py3-pydot
+      - py3-python-dateutil
+      - py3-pytz
+      - py3-regex
+      - py3-requests
+      - py3-typing-extensions
+      - py3-zstandard
+      - py3-pyarrow
+      - python-3
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - ca-certificates-bundle
+      - wolfi-base
+      - busybox
+      - build-base
+      - python-3
+      - py3-setuptools
+pipeline:
+  - uses: fetch
+    with:
+      README: 'CONFIRM WITH: curl -L https://files.pythonhosted.org/packages/5b/20/3c5f65d335652e7ee68e37f752f70f6c926a23e99d81ae46c3697638062a/apache-beam-2.50.0.zip | sha256sum'
+      expected-sha256: dcce384078c6ad7667da3bf11b19a82fcd54d1bb53e07f81ec5ca818047ad710
+      uri: https://files.pythonhosted.org/packages/5b/20/3c5f65d335652e7ee68e37f752f70f6c926a23e99d81ae46c3697638062a/apache-beam-${{package.version}}.zip
+  - name: Python Build
+    uses: python/build-wheel
+  - uses: strip

@@ -1,0 +1,49 @@
+# Generated from https://pypi.org/project/google-apitools/
+package:
+  name: py3-google-apitools
+  version: 0.5.32
+  epoch: 0
+  description: client libraries for humans
+  copyright:
+    - license: Apache 2.0
+  dependencies:
+    runtime:
+      - py3-httplib2
+      - py3-fasteners
+      - py3-oauth2client
+      - py3-six
+      - python-3
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - ca-certificates-bundle
+      - wolfi-base
+      - busybox
+      - build-base
+      - python-3
+      - py3-setuptools
+pipeline:
+  - uses: git-checkout
+    with:
+      README: for version v0.5.32, if you use this, update the package.version above to this version
+      expected-commit: 816fb1ff4425e765c5e4e53b7ca648107ca714d1
+      repository: https://github.com/google/apitools
+      tag: v${{package.version}}
+  - uses: git-checkout
+    with:
+      README: for version v0.5.16, if you use this, update the package.version above to this version
+      expected-commit: 6cc020f447db6d409d2e20d769480fc23c67827d
+      repository: https://github.com/google/apitools
+      tag: ${{package.version}}
+  - name: Python Build
+    uses: python/build-wheel
+  - uses: strip
+update:
+  enabled: true
+  manual: false
+  github:
+    identifier: google/apitools
