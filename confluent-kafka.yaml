@@ -87,7 +87,49 @@ test:
         - zookeeper
         - busybox
         - netcat-openbsd
+        - confluent-common-docker
+        - confluent-common-docker-ub
+        - confluent-common-docker-base
+        - confluent-docker-utils
+        - confluent-kafka-images-kafka
   pipeline:
+    - runs: |
+        export COMPONENT="kafka" KAFKA_ZOOKEEPER_CONNECT="127.0.0.1:2888" KAFKA_ADVERTISED_LISTENERS="PLAINTEXT://localhost:9092" CLUSTER_ID="" CUB_CLASSPATH="/usr/share/java/kafka/*:/usr/share/java/cp-base-new/*:/usr/share/java/zookeeper/*:/usr/share/java/confluent-common-docker/*"
+        set +e
+        echo "Starting entrypoint..."
+        logs=$(timeout -s KILL 10 /etc/confluent/docker/run 2>&1)
+        set -e
+
+        # Use assert_true for conditions that should be true
+        assert_true() {
+            local assert="$1"
+            if ! echo "$logs" | grep -q "$assert"; then
+                echo "Did not find '$assert' in logs"
+                echo "$logs"
+                exit 1
+            fi
+        }
+
+        # Use assert_false for conditions that should be false
+        assert_false() {
+            local assert="$1"
+            if echo "$logs" | grep -q "$assert"; then
+                echo "Found '$assert' in logs"
+                echo "$logs"
+                exit 1
+            fi
+        }
+
+        assert_true "Configuring"
+        assert_true "Running preflight checks"
+        # We couldn't run zookeeper in the CI for some reason so
+        # package keep trying to connect to it as an expected case.
+        # More detailed tests in the image.
+        assert_true "Check if Zookeeper is healthy"
+
+        # Ensure all required Java libs are available in the classpath
+        assert_false "Could not find or load main class"
+        assert_false "java.lang.ClassNotFoundException"
     - runs: |
         KAFKA_DIR=/usr/lib/kafka
 
