@@ -1,0 +1,59 @@
+package:
+  name: pqchecker
+  version: 2.0.0
+  epoch: 0
+  description: Password strength checker for OpenLDAP password policy overlay
+  copyright:
+    - license: GPL-3.0-or-later
+
+environment:
+  contents:
+    packages:
+      - autoconf
+      - automake
+      - bash
+      - build-base
+      - busybox
+      - ca-certificates-bundle
+      - cmake
+      - openldap-dev
+      - openldap
+  environment:
+    LDAPSRC: /usr
+
+pipeline:
+  - uses: fetch
+    with:
+      expected-sha256: fb000df4196ab666af8843bafa7f41ff4cdaf6ac4bfa26a06a292fefca84349e
+      uri: https://bitbucket.org/ameddeb/pqchecker/get/v${{package.version}}.tar.bz2
+
+  - uses: autoconf/configure
+
+  # - runs: ./adjustdate.bash
+
+  # - runs: make depend
+
+  # - uses: autoconf/make
+
+  # - uses: autoconf/make-install
+
+  - uses: strip
+
+subpackages:
+  - name: ${{package.name}}-dev
+    pipeline:
+      - uses: split/dev
+    dependencies:
+      runtime:
+        - ${{package.name}}
+    description: ${{package.name}} dev
+
+  - name: ${{package.name}}-doc
+    pipeline:
+      - uses: split/manpages
+    description: ${{package.name}} manpages
+
+update:
+  enabled: true
+  release-monitor:
+    identifier: 372446
