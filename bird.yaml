@@ -34,6 +34,7 @@ pipeline:
 
   - runs: |
       autoreconf -fi
+      export CFLAGS="$CFLAGS -DBIRD_VERSION=v${{package.version}}"
 
   - uses: autoconf/configure
     with:
