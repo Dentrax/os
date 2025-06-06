@@ -1,0 +1,129 @@
+package:
+  name: geoserver-2.27
+  version: "2.27.1"
+  epoch: 0
+  description: GeoServer is an open source server for sharing geospatial data
+  copyright:
+    - license: GPL-2.0-or-later
+  dependencies:
+    provides:
+      - geoserver=${{package.full-version}}
+    runtime:
+      - openjdk-${{vars.java-version}}-jre
+      - proj
+
+vars:
+  # Upstream supports OpenJDK 11, 17 and 21.
+  # We use 17 as it is compatible with Tomcat and upstream uses eclipse-temurin:17 as base image.
+  # Upstream image doesn't build for multi-JDK, so we don't either.
+  java-version: 17
+
+environment:
+  contents:
+    packages:
+      - bash
+      - build-base
+      - busybox
+      - ca-certificates-bundle
+      - curl
+      - maven
+      - openjdk-${{vars.java-version}}-default-jdk
+  environment:
+    JAVA_HOME: /usr/lib/jvm/java-${{vars.java-version}}-openjdk
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/geoserver/geoserver
+      tag: ${{package.version}}
+      expected-commit: c7e6e87c478a56427c5720a3493497759c0f53df
+
+  - name: Build
+    runs: |
+      mvn clean install \
+        -B -ntp -U -fae \
+        -T$(nproc)C \
+        -Prelease \
+        -Drelease \
+        -DskipTests \
+        --no-snapshot-updates \
+        --no-transfer-progress \
+        --fail-fast \
+        -f src/pom.xml
+
+  - name: Build Community Modules
+    runs: |
+      mvn clean install \
+        -B -ntp -U -fae -nsu \
+        -T$(nproc)C \
+        -PcommunityRelease \
+        -Drelease \
+        -DskipTests \
+        --no-snapshot-updates \
+        --no-transfer-progress \
+        --fail-fast \
+        -f src/community/pom.xml
+
+  - name: Install
+    runs: |
+      dest="${{targets.contextdir}}/usr/share/java/geoserver"
+      mkdir -p "$dest"
+
+      mkdir -p /tmp/geoserver-exploded
+      unzip -q ./src/web/app/target/geoserver.war -d /tmp/geoserver-exploded
+
+      cp -ar /tmp/geoserver-exploded/* "$dest"
+
+  - uses: strip
+
+subpackages:
+  - name: ${{package.name}}-community
+    description: "GeoServer community modules and extensions"
+    pipeline:
+      - runs: |
+          libdir="${{targets.contextdir}}/usr/share/java/geoserver/WEB-INF/lib"
+          mkdir -p "$libdir"
+          find src/community -path '*/target/*.jar' -type f -exec install -m644 -t "$libdir" {} +
+          find src/extension -path '*/target/*.jar' -type f -exec install -m644 -t "$libdir" {} +
+
+  - name: ${{package.name}}-docker
+    description: Scripts needed to run GeoServer in a Docker container
+    dependencies:
+      runtime:
+        - bash
+        - openssl
+        - curl
+        - unzip
+        - glibc-locales
+        - gettext
+        - gosu
+        - wget
+      provides:
+        - geoserver-docker=${{package.full-version}}
+    pipeline:
+      - uses: git-checkout
+        with:
+          repository: https://github.com/geoserver/docker
+          expected-commit: 76a09a91b2fca093746abb29fc9efcd68ff743e5
+          tag: ""
+          branch: master
+      - name: Create directories
+        runs: |
+          mkdir -p "${{targets.contextdir}}"/opt/config
+          mkdir -p "${{targets.contextdir}}"/opt/additional_fonts
+          mkdir -p "${{targets.contextdir}}"/opt/additional_libs
+          mkdir -p "${{targets.contextdir}}"/opt/geoserver_data
+      - name: Install scripts
+        runs: |
+          install -Dm644 config/* "${{targets.contextdir}}"/opt/config/
+          install -Dm755 *.sh "${{targets.contextdir}}"/usr/bin/
+
+update:
+  enabled: true
+  ignore-regex-patterns:
+    - -RC
+    - -M
+  github:
+    identifier: geoserver/geoserver
+    use-tag: true
+    tag-filter: 2.27.
