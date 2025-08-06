@@ -14,17 +14,12 @@ environment:
       - build-base
       - busybox
       - ca-certificates-bundle
+      - clang
       - libbpf-dev
       - libelf
       - libpcap-dev
       - linux-headers
       - util-linux-dev
-      - clang
-  environment:
-    PRODUCTION: 1
-    DYNAMIC_LIBXDP: 1
-    FORCE_SYSTEM_LIBBPF: 1
-    SBINDIR: /usr/bin
 
 pipeline:
   - uses: git-checkout
@@ -38,6 +33,14 @@ pipeline:
   - uses: autoconf/make
 
   - uses: autoconf/make-install
+    with:
+      opts: |
+        LIBDIR=/usr/lib \
+        PRODUCTION=1 \
+        DYNAMIC_LIBXDP=1 \
+        FORCE_SYSTEM_LIBBPF=1 \
+        FORCE_EMACS=1 \
+        SBINDIR=/usr/bin \
 
   - uses: strip
 
@@ -47,7 +50,8 @@ subpackages:
     pipeline:
       - runs: |
           mkdir -p ${{targets.contextdir}}/usr/lib
-          mv ${{targets.destdir}}/usr/local/lib/lib*.so.* ${{targets.contextdir}}/usr/lib
+          mv ${{targets.destdir}}/usr/lib/lib*.so.* ${{targets.contextdir}}/usr/lib
+          mv ${{targets.destdir}}/usr/lib/pkgconfig/ ${{targets.contextdir}}/usr/lib/pkgconfig/
     test:
       pipeline:
         - uses: test/tw/ldd-check
@@ -56,9 +60,21 @@ subpackages:
         - merged-usrsbin
         - wolfi-baselayout
 
+  - name: ${{package.name}}-tests
+    description: xdp-tools test scripts and programs
+    pipeline:
+      - runs: |
+          mkdir -p ${{targets.contextdir}}/usr/share
+          mv ${{targets.destdir}}/usr/local/share/xdp-tools/ ${{targets.contextdir}}/usr/share/xdp-tools/
+
   - name: xdp-tools-dev
     pipeline:
       - uses: split/dev
+      - runs: |
+          mkdir -p ${{targets.contextdir}}/usr/include
+          mv ${{targets.contextdir}}/usr/local/include/xdp ${{targets.contextdir}}/usr/include/
+          rm -rf ${{targets.contextdir}}/usr/local
+          rm -rf ${{targets.destdir}}/usr/lib # Empty folder
     dependencies:
       runtime:
         - xdp-tools
